@@ -140,7 +140,7 @@ fn filter_values<'b>(content: Vec<&'b str>, index: usize, instrument: &Instrumen
 fn invert_binary_string(input: &String) -> String {
     let mut result: String = "".to_string();
 
-    for c in String::from(input).chars() {
+    for c in input.chars() {
         if c.eq_ignore_ascii_case(&char::from_digit(1, 2).unwrap()) {
             result = result + "0";
         } else if c.eq_ignore_ascii_case(&char::from_digit(0, 2).unwrap()) {
@@ -150,6 +150,23 @@ fn invert_binary_string(input: &String) -> String {
     result
 }
 
+fn invert_binary_string_alternative(input: &String) -> String {
+    let num = !u8::from_str_radix(input, 2).unwrap();
+    format!("{:b}", num)[3..].to_string()
+}
+
+fn invert_binary_string_another(input: &String) -> String {
+    String::from_utf8(
+        input
+            .to_owned()
+            .into_bytes()
+            .iter()
+            .map(|d| d ^ 1)
+            .collect(),
+    )
+    .unwrap()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -157,6 +174,11 @@ mod tests {
     #[test]
     fn inverts_mcb_lcb() {
         assert_eq!(invert_binary_string(&"10110".to_string()), "01001");
+        assert_eq!(
+            invert_binary_string_alternative(&"10110".to_string()),
+            "01001"
+        );
+        assert_eq!(invert_binary_string_another(&"10110".to_string()), "01001");
     }
 
     #[test]
